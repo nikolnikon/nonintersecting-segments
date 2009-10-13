@@ -22,6 +22,8 @@ public:
 
 	void setEndPointType(EndPointType type) { pointType = type; }
 
+  //bool operator== (const EndPoint * rhs);
+
 private:
 	int iX;
 	int iY;
@@ -97,17 +99,24 @@ class Intersections
 public:
 	Intersections();
 	~Intersections(){}
+  void addEventPoint(const EndPoint *eventPoint);
+  bool isInLstEventPoints(const EndPoint *eventPoint) const;
+  EndPoint min(); 
 
-	void addToStatSweepLine(const EndPoint *eventPoint);
+	void addToStatSweepLine(const EndPoint *eventPoint); // возможно, здесь лучше передавать отрезок, а не точку
+  void removeFromStatSweepLine(const Segment *segment); // работает на основе find - подумать почему
+  const Segment* aboveSegment(const Segment *segment) const;
+  const Segment* underSegment(const Segment *segment) const;
 
 private:
-	map<const Segment *, const Segment *> mapIntersections;
-	list<const EndPoint *> lstEventPoints;
-	list<const Segment *> lstStatSweepLine;
-	EndPoint *curEventPoint;
+	map<const Segment*, const Segment*> mapIntersections;
+	list<const EndPoint*> lstEventPoints;
+	list<const Segment*> lstStatSweepLine;
+	//EndPoint *curEventPoint;
 };
 
 bool operator<(const Segment &fstSegm, const Segment &sndSegment);
+//bool operator== (const EndPoint * lhs, const EndPoint * rhs);
 //QLineF & sweepLine(int xSweepLine);
 
 #endif

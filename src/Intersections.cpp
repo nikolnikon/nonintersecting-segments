@@ -6,18 +6,6 @@
 
 int Segment::iXSweepLine;
 
-//Segment::Segment(qreal x1, qreal y1, qreal x2, qreal y2) : QLineF(x1, y1, x2, y2), epLeftPoint(0), epRightPoint(0)
-//{
-//	epLeftPoint = new EndPoint
-//}
-//EndPoint * Segment::leftPoint() const
-//{
-//}
-//
-//EndPoint * Segment::rightPoint() const
-//{
-//}
-
 SortSegments::SortSegments(int x)
 {
 	qlfSweepLine = QLineF(x, 0, x, 100/*maxY*/);
@@ -30,7 +18,7 @@ SortSegments::SortSegments(int x)
 //}
 
 // формируем список точек событий
-Intersections::Intersections() : curEventPoint(0)
+Intersections::Intersections() /*: curEventPoint(0)*/
 {
 	using SegmentSpace::segments;
 
@@ -55,27 +43,51 @@ Intersections::Intersections() : curEventPoint(0)
 	for (list<const EndPoint *>::const_iterator cIt = lstEventPoints.begin(); cIt != lstEventPoints.end(); ++cIt) 
 		addToStatSweepLine(*cIt);
 
-	/*vector<EndPoint*> *vecEndPoints = new vector<EndPoint*>;
-	
-	for (map<int, Segment>::const_iterator it = mapSegments.begin(); it != mapSegments.end(); ++it) {
-		vecEndPoints->push_back(new EndPoint(it->second.x2(), it->second.y2(), it->first));
-		vecEndPoints->push_back(new EndPoint(it->second.x1(), it->second.y1(), it->first));
-		sort(vecEndPoints->begin(), vecEndPoints->end(), LexSortPoints());
-		
-		vecEndPoints->at(0)->setEndPointType(EndPoint::Left);
-		vecEndPoints->at(1)->setEndPointType(EndPoint::Right);
-		
-		lstEventPoints.push_back(vecEndPoints->at(0));
-		lstEventPoints.push_back(vecEndPoints->at(1));
-		lstEventPoints.sort(LexSortPoints());
+  EndPoint *tmpPoint = new EndPoint(2, 10, 1, EndPoint::Left);
+  bool tmp = isInLstEventPoints(tmpPoint);
 
-		vecEndPoints->clear();
-	}
-	delete vecEndPoints;
-	
-	for (list<EndPoint *>::iterator it = lstEventPoints.begin(); it != lstEventPoints.end(); ++it) {
-		addToStatSweepLine(*(*it));	
-	}*/
+  EndPoint tmpP = min();
+  removeFromStatSweepLine(lstStatSweepLine.front());
+}
+
+void Intersections::addEventPoint(const EndPoint *eventPoint)
+{
+  lstEventPoints.push_back(eventPoint);
+  lstEventPoints.sort(LexSortPoints());
+}
+
+EndPoint Intersections::min()
+{
+  EndPoint ep = *lstEventPoints.front();
+  delete lstEventPoints.front(); // очищаем память, которую выделили при заполнении lstEventPoints 
+  lstEventPoints.pop_front();
+  return ep;
+}
+
+//bool EndPoint::operator== (const EndPoint * rhs)
+//{
+//  if ( iX == rhs->iX && iY == rhs->iY && siNumSegment == rhs->siNumSegment && pointType == rhs->pointType)
+//    return true;
+//  else
+//    return false;
+//}
+
+//bool operator== (const EndPoint * lhs, const EndPoint * rhs)
+//{
+//  if ( lhs->x() == rhs->x() && lhs->y() == rhs->y() && lhs->numSegment() == rhs->numSegment() && lhs->type() == rhs->type())
+//    return true;
+//  else
+//    return false;
+//}
+
+bool Intersections::isInLstEventPoints(const EndPoint *eventPoint) const
+{
+  /*std::list<const EndPoint *>::const_iterator cIt = std::find(lstEventPoints.begin(), lstEventPoints.end(), eventPoint);
+  if (cIt == lstEventPoints.end())
+    return false;
+  else
+    return true;*/
+  return std::binary_search(lstEventPoints.begin(), lstEventPoints.end(), eventPoint, LexSortPoints());
 }
 
 void Intersections::addToStatSweepLine(const EndPoint *eventPoint)
@@ -93,11 +105,30 @@ void Intersections::addToStatSweepLine(const EndPoint *eventPoint)
 		mapStatSweepLine.insert(make_pair(it->first, it->second));*/
 }
 
-//void SortSegments::setSweepLine(int x) 
-//{
-//	qlfSweepLine->setP1(QPointF(x, 0)); 
-//	qlfSweepLine->setP2(QPointF(x, 100/*maxY*/));
-//}
+void Intersections::removeFromStatSweepLine(const Segment *segment)
+{
+  std::list<const Segment *>::iterator it = std::find(lstStatSweepLine.begin(), lstStatSweepLine.end(), segment);
+  if (it != lstStatSweepLine.end())
+    lstStatSweepLine.erase(it);
+}
+
+const Segment* Intersections::aboveSegment(const Segment *segment) const //получше проверить условия в if
+{
+  std::list<const Segment *>::const_iterator it = std::find(lstStatSweepLine.begin(), lstStatSweepLine.end(), segment);
+  if (it == lstStatSweepLine.begin() || it == lstStatSweepLine.end())
+    return 0;
+  else
+    return *(--it);
+}
+
+const Segment* Intersections::underSegment(const Segment *segment) const // получше проверить условия в if
+{
+  std::list<const Segment *>::const_iterator it = std::find(lstStatSweepLine.begin(), lstStatSweepLine.end(), segment);
+  if (it == lstStatSweepLine.end() || ++it == lstStatSweepLine.end())
+    return 0;
+  else
+    return *(it); // возвращаем просто it, т.к. выполнилась операция ++it в условии
+}
 
 bool operator<(const Segment &fstSegm, const Segment &sndSegm)
 {
