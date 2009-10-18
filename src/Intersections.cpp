@@ -11,91 +11,71 @@ SortSegments::SortSegments(int x)
 	qlfSweepLine = QLineF(x, 0, x, 100/*maxY*/);
 }
 
-//SortSegments::~SortSegments() 
-//{
-//	if (qlfSweepLine)
-//		delete qlfSweepLine;
-//}
-
 // формируем список точек событий
-Intersections::Intersections() /*: curEventPoint(0)*/
+Intersections::Intersections()
 {
 	using SegmentSpace::segments;
 
-	EndPoint *pEp_1, *pEp_2;
+	EndEventPoint *pEp_1, *pEp_2;
 	
 	for (int i = 0; i < segments().segmentCount(); ++i) {
 		const Segment *cpSegment = segments().segmentByNumber(i);
-		pEp_1 = new EndPoint(cpSegment->x1(), cpSegment->y1(), i);
-		pEp_2 = new EndPoint(cpSegment->x2(), cpSegment->y2(), i);
+		pEp_1 = new EndEventPoint(cpSegment->x1(), cpSegment->y1(), i);
+		pEp_2 = new EndEventPoint(cpSegment->x2(), cpSegment->y2(), i);
 
-		EndPoint *pLeftEndPoint = std::min(pEp_1, pEp_2, LexSortPoints());
-		EndPoint *pRightEndPoint = std::max(pEp_1, pEp_2, LexSortPoints());
+		EndEventPoint *pLeftEndPoint = std::min(pEp_1, pEp_2, LexSortPoints());
+		EndEventPoint *pRightEndPoint = std::max(pEp_1, pEp_2, LexSortPoints());
 
-		pLeftEndPoint->setEndPointType(EndPoint::Left);
-		pRightEndPoint->setEndPointType(EndPoint::Right);
+		pLeftEndPoint->setEventPointType(AbstractEventPoint::Left);
+		pRightEndPoint->setEventPointType(AbstractEventPoint::Right);
 
 		lstEventPoints.push_back(pLeftEndPoint);
 		lstEventPoints.push_back(pRightEndPoint);
 	}
 	lstEventPoints.sort(LexSortPoints());
 	
-	for (list<const EndPoint *>::const_iterator cIt = lstEventPoints.begin(); cIt != lstEventPoints.end(); ++cIt) 
-		addToStatSweepLine(*cIt);
+	/*for (list<const EndPoint *>::const_iterator cIt = lstEventPoints.begin(); cIt != lstEventPoints.end(); ++cIt) 
+		addToStatSweepLine(*cIt);*/
 
-  EndPoint *tmpPoint = new EndPoint(2, 10, 1, EndPoint::Left);
-  bool tmp = isInLstEventPoints(tmpPoint);
+  //EndPoint *tmpPoint = new EndPoint(2, 10, 1, EndPoint::Left);
+  //bool tmp = isInLstEventPoints(tmpPoint);
 
-  EndPoint tmpP = min();
+  //EndPoint tmpP = min();
   removeFromStatSweepLine(lstStatSweepLine.front());
+
+  const Segment *pS = segments().segmentByNumber(4);
+  const Segment *pS_1 = underSegment(segments().segmentByNumber(4));
+  const Segment *pS_2 = aboveSegment(segments().segmentByNumber(4));
+  const EndEventPoint evp(0, 0, AbstractEventPoint::Left, 2);
+
 }
 
-void Intersections::addEventPoint(const EndPoint *eventPoint)
+void Intersections::addEventPoint(const AbstractEventPoint *eventPoint)
 {
   lstEventPoints.push_back(eventPoint);
-  lstEventPoints.sort(LexSortPoints());
+  lstEventPoints.sort(LexSortPoints()); // не рационально сортировать список каждый раз при вставке
 }
 
-EndPoint Intersections::min()
+const AbstractEventPoint* Intersections::min()
 {
-  EndPoint ep = *lstEventPoints.front();
-  delete lstEventPoints.front(); // очищаем память, которую выделили при заполнении lstEventPoints 
+  const AbstractEventPoint *ep = lstEventPoints.front();
+  //delete lstEventPoints.front(); // очищаем память, которую выделили при заполнении lstEventPoints 
   lstEventPoints.pop_front();
   return ep;
 }
 
-//bool EndPoint::operator== (const EndPoint * rhs)
-//{
-//  if ( iX == rhs->iX && iY == rhs->iY && siNumSegment == rhs->siNumSegment && pointType == rhs->pointType)
-//    return true;
-//  else
-//    return false;
-//}
-
-//bool operator== (const EndPoint * lhs, const EndPoint * rhs)
-//{
-//  if ( lhs->x() == rhs->x() && lhs->y() == rhs->y() && lhs->numSegment() == rhs->numSegment() && lhs->type() == rhs->type())
-//    return true;
-//  else
-//    return false;
-//}
-
-bool Intersections::isInLstEventPoints(const EndPoint *eventPoint) const
+bool Intersections::isInLstEventPoints(const AbstractEventPoint *eventPoint) const
 {
-  /*std::list<const EndPoint *>::const_iterator cIt = std::find(lstEventPoints.begin(), lstEventPoints.end(), eventPoint);
-  if (cIt == lstEventPoints.end())
-    return false;
-  else
-    return true;*/
   return std::binary_search(lstEventPoints.begin(), lstEventPoints.end(), eventPoint, LexSortPoints());
 }
 
-void Intersections::addToStatSweepLine(const EndPoint *eventPoint)
+//void Intersections::addToStatSweepLine(const EndPoint *eventPoint)
+void Intersections::addToStatSweepLine(const Segment *segment, int x)
 {
-	const Segment *segment = SegmentSpace::segments().segmentByNumber(eventPoint->numSegment());
+	//const Segment *segment = SegmentSpace::segments().segmentByNumber(eventPoint->numSegment());
 	if (segment) {
 		lstStatSweepLine.push_back(segment);
-		lstStatSweepLine.sort(SortSegments(eventPoint->x()));
+		lstStatSweepLine.sort(SortSegments(x));
 	}
 	else
 		return;
@@ -146,11 +126,69 @@ bool operator<(const Segment &fstSegm, const Segment &sndSegm)
 		return fstIPoint.y() < sndIPoint.y();
 }
 
-// возвращает заметающую прямую
-//QLineF & sweepLine(int xSweepLine)
-//{
-//	static QLineF sweepLine(0, 0, 0, 100);
-//	sweepLine.setP1(QPOintF(xSweepLine, 0));
-//	sweepLine.setP1(QPOintF(xSweepLine, 100));
-//	return sweepLine;
-//}
+void Intersections::findIntersections()
+{
+	using SegmentSpace::segments;
+	const AbstractEventPoint *pEp;
+	const EndEventPoint *pEep;
+	const IntEventPoint *pIep;
+	QPointF *pPtn;
+	const Segment *pSgm, *pSgm_1, *pSgm_2, *pSgm_3, *pSgm_4;
+	
+	while (! lstEventPoints.empty()) {
+		pEp = min();
+		if (pEp->type() == AbstractEventPoint::Left) {
+			pEep = dynamic_cast<const EndEventPoint*>(pEp); // наверное, не очень хорошо, но пока не придумал, как сделать лучше
+			pSgm = segments().segmentByNumber(pEep->numSegment());
+			addToStatSweepLine(pSgm, pEep->x());
+			pSgm_1 = aboveSegment(pSgm);
+			pSgm_2 = underSegment(pSgm);
+			
+			if (pSgm_1->intersect(*pSgm, pPtn) == QLineF::BoundedIntersection)
+				mapIntersections.insert(std::make_pair(pSgm_1, pSgm));
+			if (pSgm_2->intersect(*pSgm, pPtn) == QLineF::BoundedIntersection)
+				mapIntersections.insert(std::make_pair(pSgm, pSgm_2));
+		}
+		else if (pEp->type() == AbstractEventPoint::Right) {
+			pEep = dynamic_cast<const EndEventPoint*>(pEp);
+			pSgm = segments().segmentByNumber(pEep->numSegment());
+			pSgm_1 = aboveSegment(pSgm);			
+			pSgm_2 = underSegment(pSgm);
+			if (pSgm_1->intersect(*pSgm_2, pPtn) == QLineF::BoundedIntersection && (pPtn->x() > pEep->x()))
+				mapIntersections.insert(std::make_pair(pSgm_1, pSgm_2));
+			removeFromStatSweepLine(pSgm);
+		}
+		else if (pEp->type() == AbstractEventPoint::Intersection) {
+			pIep = dynamic_cast<const IntEventPoint*>(pEp);
+			std::list<short> lstSegments = pIep->numSegments();
+			if (! lstSegments.empty()) {
+				pSgm_1 = segments().segmentByNumber(lstSegments.front());
+				pSgm_2 = segments().segmentByNumber(lstSegments.back());
+			}
+			else
+				return ;
+			
+			if (pSgm_1 != aboveSegment(pSgm_2, pIep->x() - 1) {
+				pSgm_1 = pSgm_2;
+				psgm_2 = underSegment(pSgm_1, pIep->x() - 1);
+			}
+			
+			pSgm_3 = aboveSegment(pSgm_1);
+			pSgm_4 = underSegment(pSgm_2);
+
+			if (pSgm_3->intersect(*pSgm_2, pPtn) == QLineF::BoundedIntersection)
+				mapIntersections.insert(std::make_pair(pSgm_3, pSgm_2));
+			if (pSgm_1->intersect(*pSgm_4, pPtn) == QLineF::BoundedIntersection) {
+				mapIntersections.insert(std::make_pair(pSgm_1, pSgm_4));
+				lstStatSweepLine.sort(SortSegments(pIep->x())); // думаю, что так поменяются местами pSgm_1 и pSgm_2  
+		}
+		delete pEp; // очищаем память, которую выделили при заполнении lstEventPoints
+		for (std::map<const Segment* , const Segment* >::const_iterator cIt = mapIntersections.begin(); cIt != mapIntersections.end(); ++cIt) {
+			cIt->first->intersect(*(cIt->second), pPtn);
+			pIep = new IntEventPoint(pPtn->x(), pPtn->y(), AbstractEventPoint::Intersection);
+			if (! isInLstEventPoints(pIep))
+
+		}
+
+	}
+}

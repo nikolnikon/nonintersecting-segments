@@ -29,3 +29,11 @@ SegmentSpace::SegmentContainer & SegmentSpace::segments()
 	static SegmentContainer sgmContainer;
 	return sgmContainer;
 }
+
+SegmentSpace::SegmentContainer::~SegmentContainer()
+{
+	for (std::map<int, Segment* >::iterator it = mapSegments.begin(); it != mapSegments.end(); ++it) {
+		delete it->second;
+		mapSegments.erase(it);
+	}
+}

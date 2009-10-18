@@ -8,53 +8,96 @@
 using std::list;
 using std::map;
 
-// должен представлять точку события
-class EndPoint
+// абстрактный класс точки события
+class AbstractEventPoint
 {
 public:
-	enum EndPointType {Left = 0, Right, Intersection};
-	EndPoint(int x, int y, short numSegment, EndPointType type) : iX(x), iY(y), siNumSegment(numSegment), pointType(type) {}
-	EndPoint(int x, int y, short numSegment) : iX(x), iY(y), siNumSegment(numSegment) {};
+	enum EventPointType {Left = 0, Right, Intersection};
+	AbstractEventPoint(int x, int y, EventPointType type) : iX(x), iY(y), pointType(type) {}
+	AbstractEventPoint(int x, int y) : iX(x), iY(y) {}
+	virtual ~AbstractEventPoint() = 0 {}
+	
 	int x() const { return iX; }
 	int y() const { return iY; }
-	EndPointType type() const { return pointType; }
-	short numSegment() const { return siNumSegment; }
+	EventPointType type() const { return pointType; }
+	//virtual short numSegment() const = 0;
+	//virtual const std::list<short> & numSegments() const = 0;
 
-	void setEndPointType(EndPointType type) { pointType = type; }
-
-  //bool operator== (const EndPoint * rhs);
+	void setEventPointType(EventPointType type) { pointType = type; }
 
 private:
 	int iX;
 	int iY;
-	short siNumSegment;
-	EndPointType pointType;
+	EventPointType pointType;
 };
+// класс точки события, которой является конечная точка отрезка
+class EndEventPoint : public AbstractEventPoint
+{
+public:
+	EndEventPoint(int x, int y, EventPointType type, short numSegment) : AbstractEventPoint(x, y, type), siNumSegment(numSegment) {}
+	EndEventPoint(int x, int y, short numSegment) : AbstractEventPoint(x, y), siNumSegment(numSegment) {}
+	~EndEventPoint() {}
+	short numSegment() const { return siNumSegment; }
+	
+private:
+	short siNumSegment;
+};
+
+// класс точки события, которой является точка пересечения отрезков
+class IntEventPoint : public AbstractEventPoint
+{
+public:
+	IntEventPoint(int x, int y, EventPointType type) : AbstractEventPoint(x, y, type) {}
+	IntEventPoint(int x, int y) : AbstractEventPoint(x, y) {}
+	~IntEventPoint() {}
+
+	const std::list<short> & numSegments() const { return lstNumSegments; }
+
+	void addNumSegment(short numSegment) { lstNumSegments.push_back(numSegment); }
+private:
+	std::list<short> lstNumSegments;
+};
+
+// должен представлять точку события
+//class EndPoint
+//{
+//public:
+//	enum EndPointType {Left = 0, Right, Intersection};
+//	EndPoint(int x, int y, short numSegment, EndPointType type) : iX(x), iY(y), siNumSegment(numSegment), pointType(type) {}
+//	EndPoint(int x, int y, short numSegment) : iX(x), iY(y), siNumSegment(numSegment) {};
+//	int x() const { return iX; }
+//	int y() const { return iY; }
+//	EndPointType type() const { return pointType; }
+//	short numSegment() const { return siNumSegment; }
+//
+//	void setEndPointType(EndPointType type) { pointType = type; }
+//
+//  //bool operator== (const EndPoint * rhs);
+//
+//private:
+//	int iX;
+//	int iY;
+//	short siNumSegment;
+//	EndPointType pointType;
+//};
 
 class Segment : public QLineF
 {
 public:
 	Segment(qreal x1, qreal y1, qreal x2, qreal y2) : QLineF(x1, y1, x2, y2) {}
-	//Segment(qreal x1, qreal y1, qreal x2, qreal y2); // проинициализировать qlfSweepLine нулем
 	static void setXSweepLine(int xSweepLine) { iXSweepLine = xSweepLine; };
 	
 	static int xSweepLine() { return iXSweepLine; }
-	/*const EndPoint * leftPoint() const { return epLeftPoint; }
-	const EndPoint * rightPoint() const { return epRightPoint; }*/
 
 private:
 	static int iXSweepLine;
-	/*EndPoint *epLeftPoint;
-	EndPoint *epRightPoint;*/
-	//QLineF *qlfSweepLine;
-
 };
 
 // должен лексиграфически сортировать точки событий по (x, y) в списке точек событий 
 class LexSortPoints
 {
 public:
-	bool operator()(const EndPoint *fstPoint, const EndPoint *sndPoint) const
+	bool operator()(const AbstractEventPoint *fstPoint, const AbstractEventPoint *sndPoint) const
 	{
 		if (fstPoint->x() == sndPoint->x() && fstPoint->y() == sndPoint->y())
 			return false;
@@ -74,7 +117,6 @@ class SortSegments
 public:
 	explicit SortSegments(int x);
 	//~SortSegments();
-	//void setSweepLine(int x);
 	bool operator() (const Segment *fstSegm, const Segment *sndSegm) const
 	{
 		QPointF fstIPoint;
@@ -99,24 +141,25 @@ class Intersections
 public:
 	Intersections();
 	~Intersections(){}
-  void addEventPoint(const EndPoint *eventPoint);
-  bool isInLstEventPoints(const EndPoint *eventPoint) const;
-  EndPoint min(); 
+	void addEventPoint(const AbstractEventPoint *eventPoint);
+	bool isInLstEventPoints(const AbstractEventPoint *eventPoint) const;
+	const AbstractEventPoint* min(); 
 
-	void addToStatSweepLine(const EndPoint *eventPoint); // возможно, здесь лучше передавать отрезок, а не точку
-  void removeFromStatSweepLine(const Segment *segment); // работает на основе find - подумать почему
-  const Segment* aboveSegment(const Segment *segment) const;
-  const Segment* underSegment(const Segment *segment) const;
+	//void addToStatSweepLine(const EndPoint *eventPoint); // возможно, здесь лучше передавать отрезок, а не точку
+	void addToStatSweepLine(const Segment *segment, int x);
+	void removeFromStatSweepLine(const Segment *segment); // работает на основе find - подумать почему
+	const Segment* aboveSegment(const Segment *segment) const;
+	const Segment* underSegment(const Segment *segment) const;
+
+	void findIntersections();
 
 private:
-	map<const Segment*, const Segment*> mapIntersections;
-	list<const EndPoint*> lstEventPoints;
+	map<const Segment* , const Segment* > mapIntersections; // конечный результат
+	//map<const Segment* , const Segment* >mapTempIntersections;
+	list<const AbstractEventPoint*> lstEventPoints;
 	list<const Segment*> lstStatSweepLine;
-	//EndPoint *curEventPoint;
 };
 
 bool operator<(const Segment &fstSegm, const Segment &sndSegment);
-//bool operator== (const EndPoint * lhs, const EndPoint * rhs);
-//QLineF & sweepLine(int xSweepLine);
 
 #endif
