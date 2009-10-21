@@ -13,6 +13,7 @@ namespace SegmentSpace
 		void addSegment(int x1, int y1, int x2, int y2);
 
 		const Segment * segmentByNumber(int number) const;
+    int numberBySegment(const Segment *segment) const;
 		int segmentCount() const { return iSegmentCount; }
 		friend SegmentContainer & segments();
 
