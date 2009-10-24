@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 
 	segments().addSegment(2, 10, 6, 4); // L0
 	segments().addSegment(6, 4, 8, 8); // L1
-	//segments().addSegment(8, 8, 12, 2); // L2
+	segments().addSegment(8, 8, 12, 2); // L2
 	
 	Intersections ints;
 	ints.findIntersections();

@@ -13,12 +13,13 @@ namespace SegmentSpace
 		void addSegment(int x1, int y1, int x2, int y2);
 
 		const Segment * segmentByNumber(int number) const;
-    int numberBySegment(const Segment *segment) const;
+		int numberBySegment(const Segment *segment) const;
 		int segmentCount() const { return iSegmentCount; }
 		friend SegmentContainer & segments();
 
 	private:
-		//SegmentContainer(); // так компановщк будет выдавать ошибку, хотя у Мейерса именно так
+		//SegmentContainer(); // так компановщк будет выдавать ошибку, хотя у Мейерса именно так. У тогоже Мейерса в 55 советах говорится, 
+							  // что компановщик должен выдавать ошибку, т.к. функция не имеет реализации, но в коде существует ее вызов
 		SegmentContainer() {}
 		//SegmentContainer(const SegmentContainer &);
 		SegmentContainer(const SegmentContainer &) {}
