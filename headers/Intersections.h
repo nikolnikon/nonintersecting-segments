@@ -4,6 +4,7 @@
 #include <map>
 #include <list>
 #include <QLineF>
+#include "Graph.h"
 
 // абстрактный класс точки события
 class AbstractEventPoint
@@ -58,6 +59,7 @@ class Segment : public QLineF
 public:
 	Segment(qreal x1, qreal y1, qreal x2, qreal y2, int number) : QLineF(x1, y1, x2, y2), iNum(number) {}
 	IntersectType intersect (const QLineF & line, QPointF * intersectionPoint) const;
+  int numSegment() const { return iNum; }
 
 private:
 	int iNum; // пока что сделал, чтобы было удобнее отлаживать, возможно, так и отсавлю
@@ -121,6 +123,9 @@ public:
 	void swapInStatSweepLine(const Segment *cpSgm_1, const Segment *cpSgm_2);
 
 	void findIntersections();
+	void graphFromInts(GraphSpace::Graph &rGr);
+	const std::multimap<const Segment*, const Segment*>& intersections() const { return mapIntersections; }
+	void print() const;
 
 private:
 	std::multimap<const Segment* , const Segment* > mapIntersections; // конечный результат
@@ -129,6 +134,6 @@ private:
 	std::list<const Segment*> lstStatSweepLine;
 };
 
-bool operator<(const Segment &fstSegm, const Segment &sndSegment);
+//bool operator<(const Segment &fstSegm, const Segment &sndSegment);
 
 #endif
