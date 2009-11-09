@@ -84,10 +84,11 @@ namespace GraphSpace
 		{
 			NodeSet() {}
 			NodeSet(const std::list<int> &list_1, const std::list<int> &list_2) : NotCandidateNodes(list_1), CandidateNodes(list_2) {} 
-			std::list<int> NotCandidateNodes; // содержит множествj вершин Qk-
-			std::list<int> CandidateNodes; // содержит множествj вершин Qk+
+			std::list<int> NotCandidateNodes; // содержит множество вершин Qk-
+			std::list<int> CandidateNodes; // содержит множество вершин Qk+
 		};
 		bool returnCondition(int k, const Graph &crGr, std::list<int> &adjNodes) const;
+		int candidate(int k, const Graph &crGr, std::list<int> &adjNodes) const;
 		std::list<int> lstIndSet; // используется в качестве стека
 		std::vector<std::list<int>*> vecMaxIndSets;
 		int iMaxMaxIndSet;

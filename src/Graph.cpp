@@ -165,7 +165,8 @@ void GraphSpace::MaxIndependentSet::findMaxIndependentSet(const Graph &crGr)
 			vecNodeSet.push_back(new NodeSet(vecNodeSet[k]->NotCandidateNodes, vecNodeSet[k]->CandidateNodes));
 		
 		// выбираем вершину Xik из Qk+ и формируем Sk+1
-		curNode = vecNodeSet[k]->CandidateNodes.front();
+		//curNode = vecNodeSet[k]->CandidateNodes.front();
+		curNode = candidate(k, crGr, adjNodes); // не могу додуматься, но кажется, что candidate нет необходимости вызывать каждый раз на шаге 2
 		lstIndSet.push_back(curNode);
     // получаем список вершин, смежных с вершиной curNode
     adjNodes.clear();
@@ -190,6 +191,7 @@ void GraphSpace::MaxIndependentSet::findMaxIndependentSet(const Graph &crGr)
 			  lstIndSet.pop_back();
 				vecNodeSet[k]->CandidateNodes.remove_if(std::bind1st(std::equal_to<int>(), curNode));
 			  vecNodeSet[k]->NotCandidateNodes.push_back(curNode);
+				vecNodeSet[k]->NotCandidateNodes.sort();
 				step_5 = false;
 			  continue; // если не остановим алгоритм, то перейдем к шагу 3
 		  }
@@ -234,6 +236,53 @@ bool GraphSpace::MaxIndependentSet::returnCondition(int k, const Graph &crGr, st
 	}
 	return true;
 }
+
+int GraphSpace::MaxIndependentSet::candidate(int k, const Graph &crGr, std::list<int> &adjNodes) const
+{
+	/*int x;
+	int count
+	int min_count;*/
+	std::list<int> intersec;
+	std::list<int> min;
+	
+	for (std::list<int>::const_iterator cit_1 = vecNodeSet[k]->NotCandidateNodes.begin(); cit_1 != vecNodeSet[k]->NotCandidateNodes.end(); ++cit_1) {
+		adjNodes.clear();
+		crGr.node(*cit_1)->adjacentNodes(adjNodes);
+		adjNodes.sort();
+		intersec.clear();
+		std::set_intersection(adjNodes.begin(), adjNodes.end(), vecNodeSet[k]->CandidateNodes.begin(), vecNodeSet[k]->CandidateNodes.end(), std::inserter(intersec, intersec.end()));
+		if (intersec.size() < min.size())
+			min = intersec;
+	}
+	if (min.empty())
+		return vecNodeSet[k]->CandidateNodes.front();
+	else
+		return min.front();
+	
+	//for (std::list<int>::const_iterator cit_1 = vecNodeSet[k]->NotCandidateNodes.begin(); cit_1 != vecNodeSet[k]->NotCandidateNodes.end(); ++cit_1) {
+	//	adjNodes.clear();
+	//	crGr.node(*cit_1)->adjacentNodes(adjNodes);
+	//	count = adjNodes.size();
+	//	for (std::list<int>::const_iterator cit_2 = adjNodes.begin(); cit_2 != adjNodes.end(); ++cit_2) { 
+	//		std::list<int>::const_iterator cit_3 = std::find(vecNodeSet[k]->CandidateNodes.begin(), vecNodeSet[k]->CandidateNodes.end(), *cit_2);
+	//		if (cit_3 != vecNodeSet[k]->CandidateNodes.end()) {
+	//			count += 1;
+
+	//		}
+
+	//		/*for (std::list<int>::const_iterator cit_3 = vecNodeSet[k]->CandidateNodes.begin(); cit_3 != vecNodeSet[k]->CandidateNodes.end(); ++cit_3) {
+	//			if (*cit_3 == *cit_2)
+	//				count += 1;
+	//		}*/
+	//	}
+	//	if (count < min_count) {
+	//		min_count = count;
+	//		x = *cit_1;
+	//	}
+	//}
+	//return x;
+}
+
 GraphSpace::MaxIndependentSet::~MaxIndependentSet()
 {
 	for (std::vector<NodeSet*>::iterator it = vecNodeSet.begin(); it != vecNodeSet.end(); ++it) 
