@@ -51,13 +51,14 @@ public:
 
 	void addNumSegment(int numSegment) { lstNumSegments.push_back(numSegment); }
 private:
-	std::list<int> lstNumSegments;
+	std::list<int> lstNumSegments; // заменить на пару
 };
 
 class Segment : public QLineF
 {
 public:
 	Segment(qreal x1, qreal y1, qreal x2, qreal y2, int number) : QLineF(x1, y1, x2, y2), iNum(number) {}
+  Segment(const QLineF &crLine, int number) : QLineF(crLine), iNum(number) {}
 	IntersectType intersect (const QLineF & line, QPointF * intersectionPoint) const;
   int numSegment() const { return iNum; }
 
@@ -110,24 +111,23 @@ class Intersections
 {
 public:
 	Intersections();
-	~Intersections(){}
+
+	void findIntersections(); // добавить в качестве параметра ссылку на multimap
+	void graphFromInts(GraphSpace::Graph &rGr);
+	const std::multimap<const Segment*, const Segment*>& intersections() const { return mapIntersections; }// убрать функцию
+
+private:
 	void addEventPoint(const AbstractEventPoint *eventPoint);
 	bool isInLstEventPoints(const AbstractEventPoint *eventPoint) const;
-	const AbstractEventPoint* min(); 
-
-	//void addToStatSweepLine(const EndPoint *eventPoint); // возможно, здесь лучше передавать отрезок, а не точку
+	bool isIntersectionExist(const IntEventPoint *cpIep) const; 
+	const AbstractEventPoint* min();
+	
 	void addToStatSweepLine(const Segment *segment, int x);
 	void removeFromStatSweepLine(const Segment *segment); // работает на основе find - подумать почему
 	const Segment* aboveSegment(const Segment *segment) const;
 	const Segment* underSegment(const Segment *segment) const;
 	void swapInStatSweepLine(const Segment *cpSgm_1, const Segment *cpSgm_2);
 
-	void findIntersections();
-	void graphFromInts(GraphSpace::Graph &rGr);
-	const std::multimap<const Segment*, const Segment*>& intersections() const { return mapIntersections; }
-	void print() const;
-
-private:
 	std::multimap<const Segment* , const Segment* > mapIntersections; // конечный результат
 	std::multimap<const Segment* , const Segment* >mapTempIntersections;
 	std::list<const AbstractEventPoint*> lstEventPoints;

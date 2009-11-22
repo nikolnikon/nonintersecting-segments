@@ -189,7 +189,7 @@ void Intersections::findIntersections()
 			pIep = new IntEventPoint(ptn.x(), ptn.y(), AbstractEventPoint::Intersection);
 			pIep->addNumSegment(segments().numberBySegment(cIt->first));
 			pIep->addNumSegment(segments().numberBySegment(cIt->second));
-			if (! isInLstEventPoints(pIep)) {
+			if (! isInLstEventPoints(pIep) && ! isIntersectionExist(pIep)) {
 				mapIntersections.insert(std::make_pair(cIt->first, cIt->second));
 				addEventPoint(pIep);
 			}
@@ -211,8 +211,23 @@ void Intersections::graphFromInts(GraphSpace::Graph& rGr)
 		rGr.addEdge(const_cast<GraphSpace::BaseNode*>(rGr.node(cIt->first->numSegment())), const_cast<GraphSpace::BaseNode*>(rGr.node(cIt->second->numSegment())));
 }
 
-void Intersections::print() const
+bool Intersections::isIntersectionExist(const IntEventPoint *cpIep) const
 {
-	for (std::multimap<const Segment*, const Segment*>::const_iterator cIt = mapIntersections.begin(); cIt != mapIntersections.end(); ++cIt)
-		qDebug("mapIntersections: %d,%d  ", cIt->first, cIt->second);
+	std::pair<std::multimap<const Segment* , const Segment*>::const_iterator, 
+						std::multimap<const Segment* , const Segment*>::const_iterator> its;
+
+	int numSgm_1 = cpIep->numSegments().front();
+	int numSgm_2 = cpIep->numSegments().back();
+	for (int i = 0; i < 2; ++i) {
+		its = mapIntersections.equal_range(SegmentSpace::segments().segmentByNumber(numSgm_1));
+		if (its.first == mapIntersections.end())
+			return false;
+		for (std::multimap<const Segment* , const Segment*>::const_iterator cit = its.first; cit != its.second; ++cit) {
+			if (cit->second->numSegment() == numSgm_2)
+				return true;
+		}
+		numSgm_1 = cpIep->numSegments().back();
+		numSgm_2 = cpIep->numSegments().front();
+	}
+	return false;
 }

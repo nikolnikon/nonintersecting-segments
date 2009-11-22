@@ -2,7 +2,30 @@
 
 void SegmentSpace::SegmentContainer::addSegment(int x1, int y1, int x2, int y2) // возможно, стоит добавить проверку, нет ли уже такого отрезка в map
 {
-	int lastNum;
+	/*int lastNum;
+	if (! mapSegments.empty()) {
+		std::map<int, Segment *>::const_iterator it = --mapSegments.end();
+		lastNum = it->first;
+	}
+	else
+		lastNum = - 1;
+	
+	lastNum += 1;*/
+  int num = getNextNumber();
+	mapSegments.insert(std::make_pair(num, new Segment(x1, y1, x2, y2, num)));
+	iSegmentCount += 1;
+}
+
+void SegmentSpace::SegmentContainer::addSegment(const QLineF &crLine)
+{
+  int num = getNextNumber();
+  mapSegments.insert(std::make_pair(num, new Segment(crLine, num)));
+	iSegmentCount += 1;
+}
+
+int SegmentSpace::SegmentContainer::getNextNumber() const
+{
+  int lastNum;
 	if (! mapSegments.empty()) {
 		std::map<int, Segment *>::const_iterator it = --mapSegments.end();
 		lastNum = it->first;
@@ -11,8 +34,7 @@ void SegmentSpace::SegmentContainer::addSegment(int x1, int y1, int x2, int y2) 
 		lastNum = - 1;
 	
 	lastNum += 1;
-	mapSegments.insert(std::make_pair(lastNum, new Segment(x1, y1, x2, y2, lastNum)));
-	iSegmentCount += 1;
+  return lastNum;
 }
 
 const Segment * SegmentSpace::SegmentContainer::segmentByNumber(int number) const
@@ -41,8 +63,7 @@ SegmentSpace::SegmentContainer & SegmentSpace::segments()
 
 SegmentSpace::SegmentContainer::~SegmentContainer()
 {
-	for (std::map<int, Segment* >::iterator it = mapSegments.begin(); it != mapSegments.end(); ++it) {
+	for (std::map<int, Segment* >::iterator it = mapSegments.begin(); it != mapSegments.end(); ++it)
 		delete it->second;
-		mapSegments.erase(it);
-	}
+	mapSegments.clear();
 }

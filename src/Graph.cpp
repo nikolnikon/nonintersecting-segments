@@ -86,10 +86,8 @@ void GraphSpace::Graph::removeEdge(BaseNode *pBn_1, BaseNode *pBn_2)
 
 GraphSpace::Graph::~Graph()
 {
-	for (std::map<int, BaseNode*>::iterator it = mapNodes.begin(); it != mapNodes.end(); ++it) {
+	for (std::map<int, BaseNode*>::iterator it = mapNodes.begin(); it != mapNodes.end(); ++it)
 		delete it->second;
-		mapNodes.erase(it);
-	}
 }
 
 //void GraphSpace::GraphContainer::addGraphs()
@@ -129,22 +127,13 @@ GraphSpace::Graph::~Graph()
 //	}
 //}
 
-void GraphSpace::Graph::print() const
-{
-	for (std::map<int, BaseNode*>::const_iterator cIt = mapNodes.begin(); cIt != mapNodes.end(); ++cIt) {
-		qDebug("mapNodes:");
-		qDebug("\n %d -> ", cIt->first);
-		cIt->second->printAdjNodes();
-	}
-}
-
 void GraphSpace::BaseNode::printAdjNodes() const
 {
 	for (std::list<int>::const_iterator cIt = lstAdjacentNodes.begin(); cIt != lstAdjacentNodes.end(); ++cIt)
 		qDebug("%d  ", (*cIt));
 }
 
-void GraphSpace::MaxIndependentSet::findMaxIndependentSet(const Graph &crGr)
+void GraphSpace::MaxIndependentSet::findMaxIndependentSet(const Graph &crGr, std::list<int> &result)
 {
 	int k;
   std::list<int> tmpCandidates;
@@ -158,8 +147,8 @@ void GraphSpace::MaxIndependentSet::findMaxIndependentSet(const Graph &crGr)
 	for (int i = 0; i < crGr.nodeCount(); ++i)
 		vecNodeSet[0]->CandidateNodes.push_back(i);
 	
-  bool step_5;
-	while (k >= 0 && ! vecNodeSet[k]->CandidateNodes.empty()) { 
+  bool step_5, state = true;
+	while (/*k >= 0 && ! vecNodeSet[k]->CandidateNodes.empty()*/state) { 
 		// шаг 2 (ѕр€мой шаг) // подумать над условием в большом цикле // подумать над количеством циклов и услови€ми в них
     if ((k + 1) == vecNodeSet.size())
 			vecNodeSet.push_back(new NodeSet(vecNodeSet[k]->NotCandidateNodes, vecNodeSet[k]->CandidateNodes));
@@ -179,13 +168,17 @@ void GraphSpace::MaxIndependentSet::findMaxIndependentSet(const Graph &crGr)
     vecNodeSet[k + 1]->CandidateNodes.remove_if(std::bind1st(std::equal_to<int>(), curNode));
 		k += 1;
 
-		while (k != 0 || ! vecNodeSet[k]->CandidateNodes.empty()) { 
+		while (/*k != 0 || ! vecNodeSet[k]->CandidateNodes.empty()*/state) { 
 			// шаг 3 (ѕроверка)
       if (returnCondition(k, crGr, adjNodes) || step_5) { 
 				// шаг 5 (Ўаг возвращени€)
 				delete vecNodeSet[k];
 				vecNodeSet.pop_back();
         
+				if (k == 0) {
+					state = false; // в алгоритме этого нет, но мне пришлось вставить, надо разобратьс€
+					break;
+				}
 				k -= 1;
 				curNode = lstIndSet.back();
 			  lstIndSet.pop_back();
@@ -193,6 +186,8 @@ void GraphSpace::MaxIndependentSet::findMaxIndependentSet(const Graph &crGr)
 			  vecNodeSet[k]->NotCandidateNodes.push_back(curNode);
 				vecNodeSet[k]->NotCandidateNodes.sort();
 				step_5 = false;
+				if (k == 0 && vecNodeSet[k]->CandidateNodes.empty())
+					state = false;
 			  continue; // если не остановим алгоритм, то перейдем к шагу 3
 		  }
       else { 
@@ -215,6 +210,7 @@ void GraphSpace::MaxIndependentSet::findMaxIndependentSet(const Graph &crGr)
       }
     }
   }
+	result = *vecMaxIndSets[iMaxMaxIndSet];
 }
 
 bool GraphSpace::MaxIndependentSet::returnCondition(int k, const Graph &crGr, std::list<int> &adjNodes) const

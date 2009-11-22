@@ -28,7 +28,6 @@ namespace GraphSpace
 		//BaseNode* node(int numNode) const;
     //const BaseNode* incidentNodes(const BaseNode *cpAn_1, const BaseNode *cpAn_2);
     void incidentEdges(const BaseNode *cpAn, std::list<const BaseNode*> &rIncEdges);
-		void print() const;
 	private:
     int iNodeCount;
 		int iEdgeCount;
@@ -77,7 +76,7 @@ namespace GraphSpace
 	public:
 		MaxIndependentSet() : iMaxMaxIndSet(0) {}
 		~MaxIndependentSet();
-		void findMaxIndependentSet(const Graph &rGr);
+		void findMaxIndependentSet(const Graph &rGr, std::list<int> &result);
 	private:
 		// сожержит множества Qk- и Qk+ для каждого шага k
 		struct NodeSet

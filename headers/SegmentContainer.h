@@ -10,7 +10,8 @@ namespace SegmentSpace
 	{
 	public:
 		~SegmentContainer();
-		void addSegment(int x1, int y1, int x2, int y2);
+		void addSegment(int x1, int y1, int x2, int y2); // разобраться с типами параметров, вообще, по-хорошему, должны быть qreal
+    void addSegment(const QLineF &crLine);
 
 		const Segment * segmentByNumber(int number) const;
 		int numberBySegment(const Segment *segment) const;
@@ -23,7 +24,9 @@ namespace SegmentSpace
 		SegmentContainer() {}
 		//SegmentContainer(const SegmentContainer &);
 		SegmentContainer(const SegmentContainer &) {}
-		std::map<int, Segment*> mapSegments;
+    int getNextNumber() const;
+		
+    std::map<int, Segment*> mapSegments;
 		int iSegmentCount;
 	};
 	

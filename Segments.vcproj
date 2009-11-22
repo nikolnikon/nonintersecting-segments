@@ -207,6 +207,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\src\fmSegmentsImpl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Graph.cpp"
 				>
 			</File>
@@ -222,10 +226,40 @@
 				RelativePath=".\src\SegmentContainer.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\SegmentScene.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			>
+			<File
+				RelativePath=".\headers\fmSegmentsImpl.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing fmSegmentsImpl.h..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\.&quot; -I&quot;$(QTDIR)\include\ActiveQt\.&quot; -I&quot;.\debug\.&quot; -I&quot;$(QTDIR)\mkspecs\default\.&quot; -I&quot;.\headers\.&quot; -I&quot;.\tmp\moc\.&quot; -I&quot;.\tmp\rcc\.&quot; -I&quot;.\tmp\uic\.&quot; &quot;.\headers\fmSegmentsImpl.h&quot; -o &quot;.\tmp\moc\moc_fmSegmentsImpl.cpp&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\headers\fmSegmentsImpl.h"
+						Outputs="&quot;.\tmp\moc\moc_fmSegmentsImpl.cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing fmSegmentsImpl.h..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -DNDEBUG -I&quot;c:\QT\qt-win-opensource-src-4.4.3\include\QtCore\.&quot; -I&quot;c:\QT\qt-win-opensource-src-4.4.3\include\QtGui\.&quot; -I&quot;c:\QT\qt-win-opensource-src-4.4.3\include\.&quot; -I&quot;.\.&quot; -I&quot;c:\QT\qt-win-opensource-src-4.4.3\include\ActiveQt\.&quot; -I&quot;.\release\.&quot; -I&quot;c:\QT\qt-win-opensource-src-4.4.3\mkspecs\default\.&quot; -I&quot;.\tmp\rcc\.&quot; -I&quot;.\tmp\uic\.&quot; -I&quot;.\tmp\moc\.&quot; &quot;.\headers\fmSegmentsImpl.h&quot; -o &quot;.\tmp\moc\moc_fmSegmentsImpl.cpp&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\headers\fmSegmentsImpl.h"
+						Outputs="&quot;.\tmp\moc\moc_fmSegmentsImpl.cpp&quot;"
+					/>
+				</FileConfiguration>
+			</File>
 			<File
 				RelativePath=".\headers\Graph.h"
 				>
@@ -237,6 +271,100 @@
 			<File
 				RelativePath=".\headers\SegmentContainer.h"
 				>
+			</File>
+			<File
+				RelativePath=".\headers\SegmentScene.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing SegmentScene.h..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\.&quot; -I&quot;$(QTDIR)\include\ActiveQt\.&quot; -I&quot;.\debug\.&quot; -I&quot;$(QTDIR)\mkspecs\default\.&quot; -I&quot;.\headers\.&quot; -I&quot;.\tmp\moc\.&quot; -I&quot;.\tmp\rcc\.&quot; -I&quot;.\tmp\uic\.&quot; &quot;.\headers\SegmentScene.h&quot; -o &quot;.\tmp\moc\moc_SegmentScene.cpp&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\headers\SegmentScene.h"
+						Outputs="&quot;.\tmp\moc\moc_SegmentScene.cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing SegmentScene.h..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -DNDEBUG -I&quot;c:\QT\qt-win-opensource-src-4.4.3\include\QtCore\.&quot; -I&quot;c:\QT\qt-win-opensource-src-4.4.3\include\QtGui\.&quot; -I&quot;c:\QT\qt-win-opensource-src-4.4.3\include\.&quot; -I&quot;.\.&quot; -I&quot;c:\QT\qt-win-opensource-src-4.4.3\include\ActiveQt\.&quot; -I&quot;.\release\.&quot; -I&quot;c:\QT\qt-win-opensource-src-4.4.3\mkspecs\default\.&quot; -I&quot;.\tmp\rcc\.&quot; -I&quot;.\tmp\uic\.&quot; -I&quot;.\tmp\moc\.&quot; &quot;.\headers\SegmentScene.h&quot; -o &quot;.\tmp\moc\moc_SegmentScene.cpp&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\headers\SegmentScene.h"
+						Outputs="&quot;.\tmp\moc\moc_SegmentScene.cpp&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="Form Files"
+			Filter="ui"
+			UniqueIdentifier="{99349809-55BA-4b9d-BF79-8FDBB0286EB3}"
+			>
+		</Filter>
+		<Filter
+			Name="Generated Files"
+			Filter="moc;h;cpp"
+			UniqueIdentifier="{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}"
+			>
+			<File
+				RelativePath=".\tmp\moc\moc_fmSegmentsImpl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\tmp\moc\moc_SegmentScene.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\tmp\uic\ui_fmSegments.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Forms"
+			>
+			<File
+				RelativePath=".\forms\fmSegments.ui"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing $(InputPath)..."
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;.\tmp\uic\ui_fmSegments.h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;.\tmp\uic\ui_fmSegments.h&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing $(InputPath)..."
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;.\tmp\uic\ui_fmSegments.h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;.\tmp\uic\ui_fmSegments.h&quot;"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 	</Files>
