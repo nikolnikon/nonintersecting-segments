@@ -4,12 +4,19 @@
 
 
 #Header files
-HEADERS += ./headers/Intersections.h \
+HEADERS += ./headers/fmSegmentsImpl.h \
+    ./headers/Graph.h \
+    ./headers/Intersections.h \
     ./headers/SegmentContainer.h \
-    ./headers/Graph.h
+    ./headers/SegmentScene.h
 
 #Source files
-SOURCES += ./src/Intersections.cpp \
+SOURCES += ./src/fmSegmentsImpl.cpp \
+    ./src/Graph.cpp \
+    ./src/Intersections.cpp \
     ./src/main.cpp \
     ./src/SegmentContainer.cpp \
-    ./src/Graph.cpp
+    ./src/SegmentScene.cpp
+
+#Forms
+FORMS += ./forms/fmSegments.ui
