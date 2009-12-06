@@ -16,11 +16,14 @@ void SegmentSpace::SegmentContainer::addSegment(int x1, int y1, int x2, int y2) 
 	iSegmentCount += 1;
 }
 
-void SegmentSpace::SegmentContainer::addSegment(const QLineF &crLine)
+int SegmentSpace::SegmentContainer::addSegment(const QLineF &crLine)
 {
   int num = getNextNumber();
-  mapSegments.insert(std::make_pair(num, new Segment(crLine, num)));
+	std::pair<std::map<int, Segment*>::iterator, bool> res = mapSegments.insert(std::make_pair(num, new Segment(crLine, num)));
 	iSegmentCount += 1;
+	if (! res.second)
+		return -1;
+	return num;
 }
 
 int SegmentSpace::SegmentContainer::getNextNumber() const
@@ -47,6 +50,11 @@ const Segment * SegmentSpace::SegmentContainer::segmentByNumber(int number) cons
 		return 0;
 }
 
+Segment* SegmentSpace::SegmentContainer::segmentByNumber(int number)
+{
+	return const_cast<Segment*>(static_cast<const SegmentContainer&>(*this).segmentByNumber(number));
+}
+
 int SegmentSpace::SegmentContainer::numberBySegment(const Segment* segment) const
 {
   for (std::map<int, Segment*>::const_iterator cIt = mapSegments.begin(); cIt != mapSegments.end(); ++cIt) 
@@ -61,9 +69,36 @@ SegmentSpace::SegmentContainer & SegmentSpace::segments()
 	return sgmContainer;
 }
 
-SegmentSpace::SegmentContainer::~SegmentContainer()
+//void SegmentSpace::SegmentContainer::deleteSegment(const QLineF &crLine)
+//{
+//	for (std::map<int, Segment*>::const_iterator cit = mapSegments.begin(); cit != mapSegments.end(); ++cit) {
+//		if (*(cit->second) == crLine) {
+//			delete cit->second;
+//			mapSegments.erase(cit);
+//			return;
+//		}
+//	}
+//}
+
+void SegmentSpace::SegmentContainer::deleteSegment(int number)
+{
+	std::map<int, Segment*>::iterator it = mapSegments.find(number);
+	if (it == mapSegments.end())
+		return;
+	delete it->second;
+	mapSegments.erase(it);
+	iSegmentCount -= 1;
+}
+
+void SegmentSpace::SegmentContainer::clear()
 {
 	for (std::map<int, Segment* >::iterator it = mapSegments.begin(); it != mapSegments.end(); ++it)
 		delete it->second;
 	mapSegments.clear();
+	iSegmentCount = 0;
+}
+
+SegmentSpace::SegmentContainer::~SegmentContainer()
+{
+	clear();	
 }

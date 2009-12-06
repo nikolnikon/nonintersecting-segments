@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QtGui>
 #include "SegmentContainer.h"
 #include "Graph.h"
 #include "fmSegmentsImpl.h"
@@ -8,6 +9,9 @@ int main(int argc, char **argv)
 	using SegmentSpace::segments;
 
 	QApplication app(argc, argv);
+
+	QTextCodec::setCodecForTr(QTextCodec::codecForName("CP1251"));
+  QTextCodec::setCodecForCStrings(QTextCodec::codecForName("CP1251"));
 
 	//segments().addSegment(2, 6, 3, 10); // L1
 	//segments().addSegment(4, 10, 1, 7); // L2

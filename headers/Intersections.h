@@ -13,7 +13,7 @@ public:
 	enum EventPointType {Left = 0, Right, Intersection};
 	AbstractEventPoint(double x, double y, EventPointType type) : dX(x), dY(y), pointType(type) {}
 	AbstractEventPoint(double x, double y) : dX(x), dY(y) {}
-	virtual ~AbstractEventPoint() = 0 {}
+        virtual ~AbstractEventPoint() = 0;
 	
 	double x() const { return dX; }
 	double y() const { return dY; }
@@ -65,6 +65,8 @@ public:
 private:
 	int iNum; // пока что сделал, чтобы было удобнее отлаживать, возможно, так и отсавлю
 };
+
+//void operator=(Segment &lhs, const QLineF &rhs); // наверное, не очень хорошая идея с operator=()
 
 // должен лексиграфически сортировать точки событий по (x, y) в списке точек событий 
 class LexSortPoints

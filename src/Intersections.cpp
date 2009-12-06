@@ -1,10 +1,14 @@
 #include "Intersections.h"
 #include "SegmentContainer.h"
-//#include <vector>
+#include <map>
 #include <algorithm>
 
 
 //int Segment::iXSweepLine;
+
+AbstractEventPoint::~AbstractEventPoint()
+{
+}
 
 SortSegments::SortSegments(int x)
 {
@@ -15,8 +19,14 @@ QLineF::IntersectType Segment::intersect (const QLineF & line, QPointF * interse
 {
 	if (! this || ! (&line))
 		return NoIntersection;
-	QLineF::intersect(line, intersectionPoint);
+        return QLineF::intersect(line, intersectionPoint);
 }
+
+//void operator=(Segment &lhs, const QLineF &rhs)
+//{
+//	lhs.setP1(rhs.p1());
+//	lhs.setP2(rhs.p2());
+//}
 
 // формируем список точек событий
 Intersections::Intersections()
@@ -24,7 +34,7 @@ Intersections::Intersections()
 	using SegmentSpace::segments;
 
 	EndEventPoint *pEp_1, *pEp_2;
-	
+
 	for (int i = 0; i < segments().segmentCount(); ++i) {
 		const Segment *cpSegment = segments().segmentByNumber(i);
 		pEp_1 = new EndEventPoint(cpSegment->x1(), cpSegment->y1(), i);
@@ -205,6 +215,11 @@ void Intersections::graphFromInts(GraphSpace::Graph& rGr)
 	using SegmentSpace::segments;
 	
 	findIntersections();
+        qDebug("Intersections: %d\n", mapIntersections.size());
+
+        for (std::multimap<const Segment*, const Segment*>::const_iterator cit = mapIntersections.begin(); cit != mapIntersections.end(); ++cit) {
+            qDebug("%d  %d\n", cit->first->numSegment(), cit->second->numSegment());
+        }
 	for (int i = 0; i < segments().segmentCount(); ++i)
 		rGr.addNode(new GraphSpace::BaseNode(i));
 	for (std::multimap<const Segment*, const Segment*>::const_iterator cIt = mapIntersections.begin(); cIt != mapIntersections.end(); ++cIt)
