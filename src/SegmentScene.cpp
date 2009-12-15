@@ -1,6 +1,35 @@
 #include <QtGui>
 #include "SegmentScene.h"
 
+SegmentItem::SegmentItem(const QLineF &line, QGraphicsItem *parent) : QGraphicsLineItem(line, parent)
+{
+	setPen(QPen(Qt::black, 1));
+}
+
+void SegmentItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+	QGraphicsLineItem::paint(painter, option, widget);
+	QPen p = pen();
+	p.setWidth(p.width() * 2 + 2);
+	//p.setColor(Qt::red);
+	painter->setPen(p);
+	painter->drawPoint(line().p1());
+	painter->drawPoint(line().p2());
+	/*painter->drawLine(line());
+	if (isSelected()) {
+		QPen p = pen();
+		p.setStyle(Qt::DashLine);
+		p.setWidth(1);
+		painter->setPen(p);
+		QLineF l = line();
+		l.translate(0, 4.0);
+		painter->drawLine(l);
+		l.translate(0,-8.0);
+		painter->drawLine(l);
+		painter->translate(0, -4.0);
+	}*/
+}
+
 void SegmentScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
  {
      if (mouseEvent->button() != Qt::LeftButton)
@@ -21,18 +50,18 @@ void SegmentScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
  }
  
 void SegmentScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
- {
-     if (sceneMode == InsertSegment && line) {
-			 if (this->sceneRect().contains(mouseEvent->scenePos())/*mouseEvent->scenePos().x() < this->views().first()->width()*/) {
-				 QLineF newLine(line->line().p1(), mouseEvent->scenePos());
-				 line->setLine(newLine);
-			 }
-			 else 
-				 line->grabMouse();
-     } else if (sceneMode == MoveSegment) {
-         QGraphicsScene::mouseMoveEvent(mouseEvent);
-     }
- }
+{
+	if (sceneMode == InsertSegment && line) {
+	 if (this->sceneRect().contains(mouseEvent->scenePos())/*mouseEvent->scenePos().x() < this->views().first()->width()*/) {
+		 QLineF newLine(line->line().p1(), mouseEvent->scenePos());
+		 line->setLine(newLine);
+	 }
+	 else 
+		 line->grabMouse();
+	} else if (sceneMode == MoveSegment) {
+		 QGraphicsScene::mouseMoveEvent(mouseEvent);
+	}
+}
  
  void SegmentScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
@@ -49,6 +78,7 @@ void SegmentScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 		//SegmentItem *pLnItem;
 		if (! selectedItems().empty()) {
 			emit segmentMoved(dynamic_cast<SegmentItem*>(selectedItems().first()));
+			clearSelection();
 			//pLnItem = dynamic_cast<SegmentItem*>(selectedItems().first());
 			//QPointF p = pLnItem->scenePos();
 			//QLineF l = pLnItem->line();
@@ -77,28 +107,4 @@ SegmentItem* SegmentScene::item (int number) const
 		if ((*cit)->data(0).toInt() == number)
 			return dynamic_cast<SegmentItem*>(*cit);
 	return 0;
-}
-
-void SegmentItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-	QGraphicsLineItem::paint(painter, option, widget);
-	QPen p = pen();
-	p.setWidth(4);
-	//p.setColor(Qt::red);
-	painter->setPen(p);
-	painter->drawPoint(line().p1());
-	painter->drawPoint(line().p2());
-	/*painter->drawLine(line());
-	if (isSelected()) {
-		QPen p = pen();
-		p.setStyle(Qt::DashLine);
-		p.setWidth(1);
-		painter->setPen(p);
-		QLineF l = line();
-		l.translate(0, 4.0);
-		painter->drawLine(l);
-		l.translate(0,-8.0);
-		painter->drawLine(l);
-		painter->translate(0, -4.0);
-	}*/
 }

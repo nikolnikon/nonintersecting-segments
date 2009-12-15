@@ -7,7 +7,7 @@
 class SegmentItem : public QGraphicsLineItem
 {
 public:
-	SegmentItem(const QLineF &line, QGraphicsItem *parent = 0) : QGraphicsLineItem(line, parent) {}
+	SegmentItem(const QLineF &line, QGraphicsItem *parent = 0);
 protected:
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 };

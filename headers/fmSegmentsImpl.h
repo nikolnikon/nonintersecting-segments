@@ -25,14 +25,14 @@ private slots:
 
 private:
 	void createActions();
-  void createMenus();
+  //void createMenus();
   void createToolbars();
 	
 	SegmentScene *scene;
-	QAction *deleteAction;
+	//QAction *deleteAction;
 	QAction *startAction;
 	QAction *clearAction;
-	QMenu *itemMenu;
+	//QMenu *itemMenu;
 	QToolBar *mainToolBar;
 	QToolBar *editToolBar;
 	QToolBar *pointerToolbar;

@@ -9,7 +9,7 @@ fmSegmentsImpl::fmSegmentsImpl() : scene(0)/*, ints(0), graph(0), maxIndSet(0)*/
 	using SegmentSpace::segments;
 	setupUi(this);
 	createActions();
-  createMenus();
+  //createMenus();
 
 	scene = new SegmentScene;
 	QPointF pnt = QPointF(view->mapToScene(QPoint(0, 0)));
@@ -32,10 +32,10 @@ void fmSegmentsImpl::pointerGroupClicked(int)
 
 void fmSegmentsImpl::createActions()
 {
-	deleteAction = new QAction(QIcon("./images/delete.png"), tr("&Удалить"), this);
+	/*deleteAction = new QAction(QIcon("./images/delete.png"), tr("&Удалить"), this);
   deleteAction->setShortcut(tr("Удалить"));
   deleteAction->setStatusTip(tr("Удалить отрезок"));
-  connect(deleteAction, SIGNAL(triggered()), this, SLOT(deleteSegment()));
+  connect(deleteAction, SIGNAL(triggered()), this, SLOT(deleteSegment()));*/
 
 	startAction = new QAction("Найти", this);
 	startAction->setShortcut(tr("Непересекающиеся отрезки"));
@@ -48,11 +48,11 @@ void fmSegmentsImpl::createActions()
 	connect(clearAction, SIGNAL(triggered()), this, SLOT(clear()));
 }
 
-void fmSegmentsImpl::createMenus()
-{
-	itemMenu = menuBar()->addMenu(tr("&Item"));
-  itemMenu->addAction(deleteAction);
-}
+//void fmSegmentsImpl::createMenus()
+//{
+//	itemMenu = menuBar()->addMenu(tr("&Item"));
+//  itemMenu->addAction(deleteAction);
+//}
 
 void fmSegmentsImpl::createToolbars()
 {
@@ -60,7 +60,7 @@ void fmSegmentsImpl::createToolbars()
 	mainToolBar->addAction(startAction);
 
 	editToolBar = addToolBar(tr("Edit"));
-  editToolBar->addAction(deleteAction);
+  //editToolBar->addAction(deleteAction);
 	editToolBar->addAction(clearAction);
 
 	QToolButton *pointerButton = new QToolButton;
@@ -85,8 +85,9 @@ void fmSegmentsImpl::findSegments()
 {
 	//QLineF tl = dynamic_cast<QGraphicsLineItem*>(scene->items().first())->line();
 	//QPointF tp = dynamic_cast<QGraphicsLineItem*>(scene->items().first())->scenePos();
-	/*if (SegmentSpace::segments().segmentCount()) {
-	}*/
+	if (! SegmentSpace::segments().segmentCount()) {
+		return;
+	}
 	std::auto_ptr<Intersections> pInts(new Intersections);
 	std::auto_ptr<GraphSpace::Graph> pGraph(new GraphSpace::Graph);
 	std::auto_ptr<GraphSpace::MaxIndependentSet> pMaxIndSet(new GraphSpace::MaxIndependentSet);
@@ -136,8 +137,8 @@ void fmSegmentsImpl::clear()
 fmSegmentsImpl::~fmSegmentsImpl()
 {
 	delete scene;
-	delete deleteAction;
-  delete itemMenu;
+	//delete deleteAction;
+  //delete itemMenu;
   delete editToolBar;
   delete pointerToolbar;
   delete pointerTypeGroup;
